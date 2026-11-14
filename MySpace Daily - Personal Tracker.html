@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1e293b" />
+  <title>MySpace Daily — Private Personal App</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --card-soft: #f8fafc;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --dark: #0f172a;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.4;
+    }
+
+    /* Sticky Header & Month Switcher */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .app-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .app-date {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .lock-badge {
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid #a7f3d0;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .month-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-soft);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .month-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #bfdbfe;
+      background: #ffffff;
+      color: var(--primary);
+      border-radius: 9px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .month-select {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #1e3a8a;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      padding: 5px 2px;
+      cursor: pointer;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      padding: 14px 14px 88px 14px;
+    }
+
+    .tab-section {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-section.active {
+      display: flex;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+    }
+
+    .card-hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
+    }
+
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .row-gap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    h2.sec-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    p.sec-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Pills & Badges */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--green-soft); color: var(--green); }
+    .pill-red { background: var(--red-soft); color: var(--red); }
+    .pill-amber { background: var(--amber-soft); color: var(--amber); }
+    .pill-gray { background: #f1f5f9; color: #475569; }
+
+    /* Buttons */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-big-blue {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-big-red {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      background: var(--red);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    .btn-outline {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--card-soft);
+      color: #334155;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-sm {
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-del {
+      background: transparent;
+      color: #94a3b8;
+      padding: 6px 8px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+
+    /* Inputs */
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 11px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    /* Hero Salary Inputs */
+    .hero-input-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-top: 5px;
+    }
+
+    .hero-input-box label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+    }
+
+    .hero-input-row {
+      display: flex;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .hero-input-row span {
+      font-size: 16px;
+      font-weight: 800;
+      color: #93c5fd;
+      margin-right: 5px;
+    }
+
+    .hero-input-row input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 800;
+      font-family: inherit;
+    }
+
+    .hero-input-row input::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Summary Boxes */
+    .stat-tile {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 11px;
+      padding: 9px 8px;
+      text-align: center;
+    }
+
+    .stat-tile .lbl {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stat-tile .val {
+      font-size: 14px;
+      font-weight: 800;
+      margin-top: 3px;
+    }
+
+    /* To-Do / Expense Checklist Rows */
+    .todo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      background: var(--card-soft);
+      border-radius: 12px;
+    }
+
+    .todo-row.is-paid {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .chk-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      border: 2px solid #94a3b8;
+      background: #ffffff;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .chk-btn.checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .amt-input-wrap {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      padding: 6px 8px;
+      width: 104px;
+      flex-shrink: 0;
+    }
+
+    .amt-input-wrap span {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 3px;
+    }
+
+    .amt-input-wrap input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      text-align: right;
+    }
+
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 7px 10px;
+      z-index: 35;
+    }
+
+    .nav-item {
+      flex: 1;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 4px;
+      border-radius: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-item.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    /* Toast & Modal */
+    .toast {
+      position: fixed;
+      top: 98px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      z-index: 60;
+      display: none;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .hidden { display: none !important; }
+    .mono { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Header with 30th-to-29th Month Selector -->
+  <header>
+    <div class="top-bar">
+      <div>
+        <div class="app-title">MySpace Daily</div>
+        <div id="todayDateLabel" class="app-date">Today</div>
+      </div>
+      <span class="lock-badge">Private • Saved on Phone</span>
+    </div>
+
+    <div class="month-bar">
+      <button class="month-btn" onclick="stepMonth(-1)" title="Previous Month">‹</button>
+      <select id="monthSelect" class="month-select" onchange="selectMonth(this.value)"></select>
+      <button class="month-btn" onclick="stepMonth(1)" title="Next Month">›</button>
+    </div>
+  </header>
+
+  <div id="toast" class="toast">Saved</div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal-bg">
+    <div class="modal-box">
+      <h3 id="modalTitle" style="font-size:15px;font-weight:800;">Confirm</h3>
+      <p id="modalMsg" style="font-size:12px;color:#64748b;margin-top:6px;">Are you sure?</p>
+      <div class="grid-2" style="margin-top:14px;">
+        <button class="btn-outline" onclick="closeModal()">Cancel</button>
+        <button id="modalConfirmBtn" style="padding:11px;border-radius:12px;background:#dc2626;color:#fff;font-size:12px;font-weight:800;">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- =========================================================== -->
+    <!-- TAB 1: OFFICE SWIPE (MAIN GATE ONLY - 9 HOURS TRACKER)      -->
+    <!-- =========================================================== -->
+    <section id="sec-swipe" class="tab-section active">
+      <div class="card">
+        <div class="row-between" style="margin-bottom:12px;">
+          <span class="pill pill-blue">Office Gate: Main Gate</span>
+          <span id="swipeBadge" class="pill pill-gray">Not Swiped In</span>
+        </div>
+
+        <button id="swipeActionBtn" class="btn-big-blue" onclick="toggleOfficeSwipe()">SWIPE IN (MAIN GATE)</button>
+
+        <button id="weekOffBtn" class="btn-outline" style="margin-top:10px;" onclick="markWeekOffToday()">
+          No Swipe Today / Week Off (Sat / Sun / Leave)
+        </button>
+
+        <!-- Week Off Banner -->
+        <div id="weekOffBox" class="hidden" style="margin-top:12px;padding:12px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#1e3a8a;">No Swipe Today (Week Off)</div>
+            <div style="font-size:11px;color:#3b82f6;">Saved in this month's attendance</div>
+          </div>
+          <button class="btn-sm" style="background:#fff;color:#2563eb;border:1px solid #bfdbfe;" onclick="undoWeekOffToday()">Undo</button>
+        </div>
+
+        <!-- Active Shift Info -->
+        <div id="activeShiftBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px;">
+          <div class="grid-2">
+            <div style="background:var(--card-soft);border:1px solid var(--border);border-radius:12px;padding:11px;">
+              <div class="row-between">
+                <span style="font-size:11px;color:var(--muted);font-weight:700;">Swiped In</span>
+                <button onclick="toggleEditInTime()" style="background:transparent;color:var(--primary);font-size:11px;font-weight:800;text-decoration:underline;">Edit</button>
+              </div>
+              <div id="inTimeText" style="font-size:16px;font-weight:800;margin-top:3px;">--:-- --</div>
+              <div style="font-size:11px;color:var(--primary);font-weight:600;">Main Gate</div>
+            </div>
+
+            <div style="background:var(--primary-soft);border:1px solid #bfdbfe;border-radius:12px;padding:11px;">
+              <span style="font-size:11px;color:#1e40af;font-weight:700;">Expected Out (9h)</span>
+              <div id="outTimeText" style="font-size:16px;font-weight:800;color:#1e3a8a;margin-top:3px;">--:-- --</div>
+              <div style="font-size:11px;color:#2563eb;font-weight:600;">Exact 9-hour mark</div>
+            </div>
+          </div>
+
+          <div id="editInTimeBox" class="hidden" style="background:var(--amber-soft);border:1px solid #fde68a;border-radius:12px;padding:10px;">
+            <label style="font-size:11px;font-weight:700;color:#78350f;display:block;margin-bottom:5px;">Change Swipe-In Time:</label>
+            <div class="row-gap">
+              <input type="time" id="manualInInput" step="1" class="input-field" />
+              <button class="btn-sm" style="background:#d97706;color:#fff;padding:10px 14px;" onclick="saveEditedInTime()">Save</button>
+            </div>
+          </div>
+
+          <div class="card-hero">
+            <div class="row-between">
+              <div>
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Hours Completed</div>
+                <div id="elapsedText" class="mono" style="font-size:22px;font-weight:800;color:#34d399;margin-top:2px;">00h 00m 00s</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Left for 9 Hours</div>
+                <div id="remainingShiftText" class="mono" style="font-size:16px;font-weight:800;color:#fcd34d;margin-top:3px;">09h 00m 00s</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Month Swipe History -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:10px;">
+          <div>
+            <h2 id="swipeLogTitle" class="sec-title">Swipe Log</h2>
+            <p id="swipeLogSub" class="sec-sub">Main Gate records for selected month</p>
+          </div>
+          <span id="swipeCountPill" class="pill pill-gray">0 days</span>
+        </div>
+        <div id="swipeHistoryList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </section>
+
+
+    <!-- =========================================================== -->
+    <!-- TAB 2: SALARY, FIXED TO-DO LIST & ALTERNATE-SUNDAY CHITTY   -->
+    <!-- =========================================================== -->
+    <section id="sec-salary" class="tab-section">
+
+      <!-- 1. Salary & Savings Target Hero Card -->
+      <div class="card-hero">
+        <div class="row-between" style="margin-bottom:6px;">
+          <span id="salaryCycleBadge" style="font-size:11px;font-weight:800;color:#93c5fd;">Nov 2026 Salary (Credited 30th)</span>
+          <span id="savingsStatus" class="pill pill-green" style="font-size:10px;">Target: Not Set</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="hero-input-box">
+            <label for="salaryInput">Monthly Salary</label>
+            <div class="hero-input-row">
+              <span>₹</span>
+              <input type="number" id="salaryInput" inputmode="numeric" placeholder="0" oninput="onSalaryInput(this.value)" />
+            </div>
+          </div>
+
+          <div class="hero-input-box">
+            <label for="savingsTargetInput">Savings Target</label>
+            <div class="hero-input-row">
+              <span>₹</span>
+              <input type="number" id="savingsTargetInput" inputmode="numeric" placeholder="0" oninput="onSavingsTargetInput(this.value)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Clear Summary Boxes -->
+        <div class="grid-3" style="margin-top:12px;">
+          <div class="stat-tile">
+            <div class="lbl">Remaining</div>
+            <div id="remainingVal" class="val" style="color:#34d399;">₹0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="lbl">Already Paid</div>
+            <div id="paidVal" class="val" style="color:#ffffff;">₹0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="lbl">Still to Pay</div>
+            <div id="unpaidVal" class="val" style="color:#fcd34d;">₹0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Fixed Monthly Fields + To-Do List -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:10px;">
+          <div>
+            <h2 class="sec-title">Monthly Expenses & To-Do List</h2>
+            <p class="sec-sub">Enter amount & tick checkbox when paid</p>
+          </div>
+        </div>
+
+        <div id="todoListContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+        <!-- Add Custom Field Row -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">+ Add Another Field to This Month</div>
+          <div class="row-gap">
+            <input type="text" id="newFieldName" class="input-field" placeholder="Field name (e.g. Bike EMI, Recharge)" style="flex:1;" />
+            <input type="number" id="newFieldAmt" inputmode="numeric" class="input-field" placeholder="₹ Amt" style="width:88px;" />
+            <button class="btn-sm" style="background:var(--primary);color:#fff;padding:10px 14px;" onclick="addCustomTodoField()">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Alternate-Sunday Chitty Dates (Right Below To-Do List) -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:8px;">
+          <div>
+            <h2 id="chittyCardTitle" class="sec-title">Chitty Sundays — Nov 2026</h2>
+            <p class="sec-sub">Alternate Sundays (2 dates per month) • Auto-calculated</p>
+          </div>
+          <button class="btn-sm pill-gray" onclick="toggleAnchorBox()">Anchor Sun</button>
+        </div>
+
+        <div id="anchorEditBox" class="hidden" style="margin-bottom:10px;padding:10px;background:var(--card-soft);border:1px solid var(--border);border-radius:11px;">
+          <label style="font-size:11px;font-weight:700;display:block;margin-bottom:5px;">Reference Paid Sunday (repeats every 14 days):</label>
+          <div class="row-gap">
+            <input type="date" id="anchorDateInput" class="input-field" />
+            <button class="btn-sm" style="background:var(--primary);color:#fff;padding:9px 14px;" onclick="saveAnchorDate()">Set</button>
+          </div>
+        </div>
+
+        <div id="chittySundaysList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- 4. Bill Due Dates & Auto-Debit Reminders -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:8px;">
+          <div>
+            <h2 class="sec-title">Bill Due Dates & Auto-Debit</h2>
+            <p class="sec-sub">Track auto-debits & bills informed by parents</p>
+          </div>
+        </div>
+
+        <div id="dueDatesList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
+
+        <div class="row-gap">
+          <input type="text" id="newDueName" class="input-field" placeholder="Bill name (e.g. SIP Auto-Debit)" style="flex:1;" />
+          <input type="number" id="newDueDay" min="1" max="31" inputmode="numeric" class="input-field" placeholder="Day" style="width:62px;" />
+          <select id="newDueType" class="input-field" style="width:95px;padding:10px 6px;">
+            <option value="Auto-Debit">Auto</option>
+            <option value="Manual">Manual</option>
+          </select>
+          <button class="btn-sm" style="background:var(--primary);color:#fff;padding:10px 12px;" onclick="addDueDateItem()">+</button>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================== -->
+    <!-- TAB 3: FULL MONTH HISTORY, RENEWAL REMINDERS & HEALTH LOG   -->
+    <!-- =========================================================== -->
+    <section id="sec-history" class="tab-section">
+
+      <!-- Complete Selected Month Report -->
+      <div class="card">
+        <div class="row-between" style="margin-bottom:10px;">
+          <div>
+            <h2 id="archiveTitle" class="sec-title">Nov 2026 — Complete Record</h2>
+            <p id="archiveSub" class="sec-sub">Switch month at top to view any previous month</p>
+          </div>
+          <button class="btn-sm" style="background:var(--primary);color:#fff;" onclick="downloadMonthTxt()">Download .TXT</button>
+        </div>
+
+        <div id="archiveSummaryBox" style="background:var(--card-soft);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:12px;display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+
+      <!-- Custom Renewal Reminders -->
+      <div class="card">
+        <h2 class="sec-title">Renewal & Custom Reminders</h2>
+        <p class="sec-sub" style="margin-bottom:10px;">Type any renewal or expiry date you want to track</p>
+
+        <div class="row-gap" style="margin-bottom:10px;">
+          <input type="text" id="renTitle" class="input-field" placeholder="Type reminder (e.g. Bike Insurance)" style="flex:1;" />
+          <input type="date" id="renDate" class="input-field" style="width:132px;" />
+          <button class="btn-sm" style="background:var(--primary);color:#fff;padding:10px 13px;" onclick="addRenewal()">Add</button>
+        </div>
+        <div id="renewalList" style="display:flex;flex-direction:column;gap:7px;"></div>
+      </div>
+
+      <!-- Medicine & Health Log -->
+      <div class="card">
+        <h2 class="sec-title">Medicine & Health Log</h2>
+        <p class="sec-sub" style="margin-bottom:10px;">Keep a simple date record of sickness or tablets</p>
+
+        <div class="row-gap" style="margin-bottom:10px;">
+          <input type="text" id="healthNote" class="input-field" placeholder="Symptom / Medicine taken" style="flex:1;" />
+          <input type="date" id="healthDate" class="input-field" style="width:132px;" />
+          <button class="btn-sm" style="background:var(--green);color:#fff;padding:10px 13px;" onclick="addHealth()">Log</button>
+        </div>
+        <div id="healthList" style="display:flex;flex-direction:column;gap:7px;"></div>
+      </div>
+
+      <!-- Full Device Backup / Restore -->
+      <div class="card">
+        <h2 class="sec-title">Phone Data Backup</h2>
+        <p class="sec-sub" style="margin-bottom:10px;">Everything is saved automatically on your phone. Save a backup file anytime.</p>
+        <div class="grid-2">
+          <button class="btn-outline" onclick="downloadJsonBackup()">Save Backup (.JSON)</button>
+          <label class="btn-outline" style="text-align:center;cursor:pointer;display:block;">
+            Restore Backup
+            <input type="file" accept=".json" class="hidden" onchange="restoreJsonBackup(event)" />
+          </label>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Simple 3-Tab Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button id="nav-swipe" class="nav-item active" onclick="openTab('swipe')">
+      <span style="font-size:16px;">⏱</span>
+      <span>Office Swipe</span>
+    </button>
+    <button id="nav-salary" class="nav-item" onclick="openTab('salary')">
+      <span style="font-size:16px;">₹</span>
+      <span>Salary & To-Do</span>
+    </button>
+    <button id="nav-history" class="nav-item" onclick="openTab('history')">
+      <span style="font-size:16px;">📋</span>
+      <span>History & Notes</span>
+    </button>
+  </nav>
+
+  <script>
+    // ===========================================================
+    // 1. STORAGE & DEFAULT DATA (FIXED ITEMS + 30TH SALARY CYCLE)
+    // ===========================================================
+    const STORE_KEY = 'myspace_daily_clean_v4';
+    const NINE_HOURS_MS = 9 * 60 * 60 * 1000;
+    const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+
+    // Default fixed monthly items that appear in every month
+    const DEFAULT_FIXED_FIELDS = [
+      { key: 'fixed_pg', name: 'PG / Hostel Rent', fixed: true },
+      { key: 'fixed_chitty1', name: 'Chitty 1', fixed: true },
+      { key: 'fixed_chitty2', name: 'Chitty 2', fixed: true },
+      { key: 'fixed_sip', name: 'SIP', fixed: true }
+    ];
+
+    let state = {
+      activeShift: null,
+      weekOffDateKey: null,
+      swipeLogs: [],
+      // Anchored on Sun, Nov 8, 2026 ("Paid last Sunday") -> Next: Sun, Nov 22, 2026 -> Sun, Dec 6, 2026...
+      chittyAnchorSun: '2026-11-08',
+      chittyPaidMap: {
+        '2026-11-08': true
+      },
+      // Per-month data keyed by 'YYYY-MM' (30th to 29th cycle)
+      months: {},
+      // Recurring due date templates
+      dueTemplates: [
+        { id: 'due_1', name: 'SIP Auto-Debit', day: 5, type: 'Auto-Debit' },
+        { id: 'due_2', name: 'PG / Hostel Rent', day: 10, type: 'Manual' }
+      ],
+      renewals: [],
+      healthLogs: []
+    };
+
+    let currentMonthKey = '';
+    let pendingModalAction = null;
+
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          state = Object.assign({}, state, parsed);
+          if (!state.months) state.months = {};
+          if (!state.chittyPaidMap) state.chittyPaidMap = { '2026-11-08': true };
+        }
+      } catch (e) {
+        // Fallback in memory if storage blocked
+      }
+    }
+
+    function saveAppState() {
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage errors silently
+      }
+    }
+
+    // ===========================================================
+    // 2. 30TH-TO-29TH SALARY CYCLE HELPERS
+    // ===========================================================
+    function toDateKey(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // Salary credits on the 30th of every month:
+    // Oct 30 .. Nov 29 => '2026-11' (Nov 2026)
+    // Nov 30 .. Dec 29 => '2026-12' (Dec 2026)
+    function detectActiveSalaryMonthKey(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = dateObj.getMonth();
+      const day = dateObj.getDate();
+      const creditDay = Math.min(30, new Date(y, m + 1, 0).getDate());
+      let targetY = y;
+      let targetM = m;
+      if (day >= creditDay) {
+        targetM += 1;
+        if (targetM > 11) {
+          targetM = 0;
+          targetY += 1;
+        }
+      }
+      return `${targetY}-${String(targetM + 1).padStart(2, '0')}`;
+    }
+
+    function getMonthMeta(monthKey) {
+      const [y, m] = monthKey.split('-').map(Number); // m: 1..12
+      const prevY = m === 1 ? y - 1 : y;
+      const prevM = m === 1 ? 12 : m - 1;
+      const startDay = Math.min(30, new Date(prevY, prevM, 0).getDate());
+      const startDate = new Date(prevY, prevM - 1, startDay, 0, 0, 0);
+
+      const endDay = m === 2 ? Math.min(28, new Date(y, m, 0).getDate() - 1) : 29;
+      const endDate = new Date(y, m - 1, endDay, 23, 59, 59);
+
+      const shortName = new Date(y, m - 1, 1).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+      const longName = new Date(y, m - 1, 1).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+      const startLabel = startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      const endLabel = endDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+      return {
+        monthKey,
+        year: y,
+        month: m,
+        shortName,
+        longName,
+        rangeText: `${startLabel} – ${endLabel}`,
+        startKey: toDateKey(startDate),
+        endKey: toDateKey(endDate)
+      };
+    }
+
+    function offsetMonthKey(monthKey, delta) {
+      const [y, m] = monthKey.split('-').map(Number);
+      const d = new Date(y, (m - 1) + delta, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function ensureMonthData(monthKey) {
+      if (!state.months[monthKey]) {
+        // Carry over previous month's amounts if available so fixed items stay convenient
+        const prevKey = offsetMonthKey(monthKey, -1);
+        const prevMonth = state.months[prevKey];
+        const prevMap = {};
+        if (prevMonth && Array.isArray(prevMonth.todos)) {
+          prevMonth.todos.forEach(t => { prevMap[t.name] = t.amount; });
+        }
+
+        state.months[monthKey] = {
+          salary: '',
+          savingsTarget: prevMonth ? (prevMonth.savingsTarget || '') : '',
+          todos: DEFAULT_FIXED_FIELDS.map(f => ({
+            id: f.key + '_' + monthKey,
+            name: f.name,
+            amount: prevMap[f.name] !== undefined ? prevMap[f.name] : '',
+            paid: false,
+            fixed: true
+          })),
+          dueStatus: {}
+        };
+        saveAppState();
+      }
+      return state.months[monthKey];
+    }
+
+    // ===========================================================
+    // 3. TOP MONTH BAR & NAVIGATION
+    // ===========================================================
+    function renderMonthDropdown() {
+      const sel = document.getElementById('monthSelect');
+      const activeKey = detectActiveSalaryMonthKey(new Date());
+      const keys = new Set(Object.keys(state.months));
+      for (let i = -3; i <= 4; i++) {
+        keys.add(offsetMonthKey(activeKey, i));
+      }
+      keys.add(currentMonthKey);
+
+      const sorted = Array.from(keys).sort();
+      sel.innerHTML = sorted.map(k => {
+        const meta = getMonthMeta(k);
+        const tag = k === activeKey ? ' • Active' : '';
+        return `<option value="${k}" ${k === currentMonthKey ? 'selected' : ''}>${meta.shortName} (${meta.rangeText})${tag}</option>`;
+      }).join('');
+    }
+
+    function stepMonth(delta) {
+      currentMonthKey = offsetMonthKey(currentMonthKey, delta);
+      ensureMonthData(currentMonthKey);
+      renderMonthDropdown();
+      refreshAllScreens();
+      showToast('Viewing ' + getMonthMeta(currentMonthKey).shortName);
+    }
+
+    function selectMonth(key) {
+      currentMonthKey = key;
+      ensureMonthData(currentMonthKey);
+      renderMonthDropdown();
+      refreshAllScreens();
+    }
+
+    function openTab(name) {
+      ['swipe', 'salary', 'history'].forEach(t => {
+        document.getElementById('sec-' + t).classList.toggle('active', t === name);
+        document.getElementById('nav-' + t).classList.toggle('active', t === name);
+      });
+      if (name === 'swipe') renderSwipeLogs();
+      if (name === 'salary') renderSalaryScreen();
+      if (name === 'history') renderHistoryScreen();
+    }
+
+    function refreshAllScreens() {
+      renderSwipeLogs();
+      renderSalaryScreen();
+      renderHistoryScreen();
+    }
+
+    // ===========================================================
+    // 4. TAB 1: OFFICE SWIPE (MAIN GATE ONLY)
+    // ===========================================================
+    function toggleOfficeSwipe() {
+      if (!state.activeShift) {
+        const now = Date.now();
+        const d = new Date(now);
+        const dKey = toDateKey(d);
+        const dateLabel = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+        if (state.weekOffDateKey === dKey) {
+          state.weekOffDateKey = null;
+          state.swipeLogs = state.swipeLogs.filter(x => !(x.type === 'off' && x.dateKey === dKey));
+        }
+
+        state.activeShift = {
+          inTs: now,
+          dateKey: dKey,
+          dateLabel
+        };
+        saveAppState();
+        updateSwipeControls();
+        renderSwipeLogs();
+        showToast('Swiped In at Main Gate');
+      } else {
+        openModal('Swipe Out Now?', 'Complete your Main Gate shift and save today\'s hours?', () => {
+          const now = Date.now();
+          const s = state.activeShift;
+          state.swipeLogs.unshift({
+            id: 'sw_' + now,
+            type: 'work',
+            dateKey: s.dateKey,
+            dateLabel: s.dateLabel,
+            inTs: s.inTs,
+            outTs: now,
+            durationMs: Math.max(0, now - s.inTs)
+          });
+          state.activeShift = null;
+          document.getElementById('editInTimeBox').classList.add('hidden');
+          saveAppState();
+          updateSwipeControls();
+          renderSwipeLogs();
+          showToast('Swiped Out & Saved');
+        });
+      }
+    }
+
+    function markWeekOffToday() {
+      if (state.activeShift) return;
+      const d = new Date();
+      const dKey = toDateKey(d);
+      const dateLabel = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      state.weekOffDateKey = dKey;
+      if (!state.swipeLogs.some(x => x.type === 'off' && x.dateKey === dKey)) {
+        state.swipeLogs.unshift({
+          id: 'off_' + Date.now(),
+          type: 'off',
+          dateKey: dKey,
+          dateLabel,
+          inTs: null,
+          outTs: null,
+          durationMs: 0
+        });
+      }
+      saveAppState();
+      updateSwipeControls();
+      renderSwipeLogs();
+      showToast('Marked as No Swipe / Week Off');
+    }
+
+    function undoWeekOffToday() {
+      const dKey = state.weekOffDateKey || toDateKey(new Date());
+      state.weekOffDateKey = null;
+      state.swipeLogs = state.swipeLogs.filter(x => !(x.type === 'off' && x.dateKey === dKey));
+      saveAppState();
+      updateSwipeControls();
+      renderSwipeLogs();
+      showToast('Week Off removed');
+    }
+
+    function toggleEditInTime() {
+      const box = document.getElementById('editInTimeBox');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden') && state.activeShift) {
+        const d = new Date(state.activeShift.inTs);
+        document.getElementById('manualInInput').value =
+          `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+      }
+    }
+
+    function saveEditedInTime() {
+      if (!state.activeShift) return;
+      const val = document.getElementById('manualInInput').value;
+      if (!val) return;
+      const [hh, mm, ss] = val.split(':').map(Number);
+      const d = new Date(state.activeShift.inTs);
+      d.setHours(hh || 0, mm || 0, ss || 0, 0);
+      state.activeShift.inTs = d.getTime();
+      document.getElementById('editInTimeBox').classList.add('hidden');
+      saveAppState();
+      updateSwipeControls();
+      showToast('Swipe-In time updated');
+    }
+
+    function updateSwipeControls() {
+      const badge = document.getElementById('swipeBadge');
+      const btn = document.getElementById('swipeActionBtn');
+      const offBtn = document.getElementById('weekOffBtn');
+      const offBox = document.getElementById('weekOffBox');
+      const shiftBox = document.getElementById('activeShiftBox');
+      const isOffToday = state.weekOffDateKey === toDateKey(new Date());
+
+      if (state.activeShift) {
+        badge.className = 'pill pill-green';
+        badge.textContent = 'Swiped In';
+        btn.className = 'btn-big-red';
+        btn.textContent = 'SWIPE OUT NOW';
+        offBtn.classList.add('hidden');
+        offBox.classList.add('hidden');
+        shiftBox.classList.remove('hidden');
+
+        document.getElementById('inTimeText').textContent = formatTime12(state.activeShift.inTs, true);
+        document.getElementById('outTimeText').textContent = formatTime12(state.activeShift.inTs + NINE_HOURS_MS, true);
+        updateLiveShiftClock();
+      } else if (isOffToday) {
+        badge.className = 'pill pill-blue';
+        badge.textContent = 'No Swipe Today';
+        btn.className = 'btn-outline';
+        btn.textContent = 'SWIPE IN ANYWAY (MAIN GATE)';
+        offBtn.classList.add('hidden');
+        offBox.classList.remove('hidden');
+        shiftBox.classList.add('hidden');
+      } else {
+        badge.className = 'pill pill-gray';
+        badge.textContent = 'Not Swiped In';
+        btn.className = 'btn-big-blue';
+        btn.textContent = 'SWIPE IN (MAIN GATE)';
+        offBtn.classList.remove('hidden');
+        offBox.classList.add('hidden');
+        shiftBox.classList.add('hidden');
+      }
+    }
+
+    function updateLiveShiftClock() {
+      if (!state.activeShift) return;
+      const elapsed = Math.max(0, Date.now() - state.activeShift.inTs);
+      const left = Math.max(0, NINE_HOURS_MS - elapsed);
+      document.getElementById('elapsedText').textContent = formatHMS(elapsed);
+      const remEl = document.getElementById('remainingShiftText');
+      if (left === 0) {
+        remEl.textContent = '9h Done!';
+        remEl.style.color = '#34d399';
+      } else {
+        remEl.textContent = formatHMS(left);
+        remEl.style.color = '#fcd34d';
+      }
+    }
+
+    function renderSwipeLogs() {
+      const meta = getMonthMeta(currentMonthKey);
+      document.getElementById('swipeLogTitle').textContent = `Swipe Log — ${meta.shortName}`;
+      document.getElementById('swipeLogSub').textContent = `Cycle: ${meta.rangeText} • Main Gate`;
+
+      const logs = state.swipeLogs.filter(x => x.dateKey >= meta.startKey && x.dateKey <= meta.endKey);
+      document.getElementById('swipeCountPill').textContent = `${logs.length} ${logs.length === 1 ? 'day' : 'days'}`;
+
+      const listEl = document.getElementById('swipeHistoryList');
+      if (!logs.length) {
+        listEl.innerHTML = `<div style="text-align:center;padding:16px;font-size:12px;color:var(--muted);background:var(--card-soft);border-radius:12px;border:1px dashed var(--border);">No swipe records in ${meta.shortName} yet.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = logs.map(item => {
+        if (item.type === 'off') {
+          return `
+            <div class="todo-row" style="background:#eff6ff;border-color:#bfdbfe;justify-content:space-between;">
+              <div>
+                <div style="font-size:12px;font-weight:800;">${esc(item.dateLabel)}</div>
+                <div style="font-size:11px;color:#2563eb;">No Swipe Today / Week Off</div>
+              </div>
+              <div class="row-gap">
+                <span class="pill pill-blue">Week Off</span>
+                <button class="btn-del" onclick="deleteSwipeLog('${item.id}')">✕</button>
+              </div>
+            </div>
+          `;
+        }
+        const ok9 = item.durationMs >= NINE_HOURS_MS;
+        return `
+          <div class="todo-row" style="justify-content:space-between;">
+            <div>
+              <div style="font-size:12px;font-weight:800;">${esc(item.dateLabel)} <span style="color:var(--primary);font-size:11px;">• Main Gate</span></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+                In: <strong style="color:var(--text);">${formatTime12(item.inTs, false)}</strong> •
+                Out: <strong style="color:var(--text);">${formatTime12(item.outTs, false)}</strong>
+              </div>
+            </div>
+            <div class="row-gap">
+              <span class="pill ${ok9 ? 'pill-green' : 'pill-amber'}">${formatHMS(item.durationMs)}</span>
+              <button class="btn-del" onclick="deleteSwipeLog('${item.id}')">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteSwipeLog(id) {
+      openModal('Delete Entry?', 'Remove this day from your swipe history?', () => {
+        const target = state.swipeLogs.find(x => x.id === id);
+        if (target && target.type === 'off' && target.dateKey === state.weekOffDateKey) {
+          state.weekOffDateKey = null;
+        }
+        state.swipeLogs = state.swipeLogs.filter(x => x.id !== id);
+        saveAppState();
+        updateSwipeControls();
+        renderSwipeLogs();
+        showToast('Deleted');
+      });
+    }
+
+    // ===========================================================
+    // 5. TAB 2: SALARY, FIXED TO-DO LIST & ALTERNATE-SUNDAY CHITTY
+    // ===========================================================
+    // IMPORTANT: Typing in inputs ONLY updates state & recalculates numbers—NEVER re-renders DOM so keyboard/cursor never resets!
+    function onSalaryInput(val) {
+      const mData = ensureMonthData(currentMonthKey);
+      mData.salary = val === '' ? '' : Math.max(0, Number(val));
+      saveAppState();
+      updateSalaryNumbersOnly();
+    }
+
+    function onSavingsTargetInput(val) {
+      const mData = ensureMonthData(currentMonthKey);
+      mData.savingsTarget = val === '' ? '' : Math.max(0, Number(val));
+      saveAppState();
+      updateSalaryNumbersOnly();
+    }
+
+    function onTodoAmountInput(todoId, val) {
+      const mData = ensureMonthData(currentMonthKey);
+      const item = mData.todos.find(t => t.id === todoId);
+      if (!item) return;
+      item.amount = val === '' ? '' : Math.max(0, Number(val));
+      saveAppState();
+      updateSalaryNumbersOnly();
+    }
+
+    function toggleTodoPaid(todoId) {
+      const mData = ensureMonthData(currentMonthKey);
+      const item = mData.todos.find(t => t.id === todoId);
+      if (!item) return;
+      item.paid = !item.paid;
+      saveAppState();
+      renderTodoChecklist();
+      updateSalaryNumbersOnly();
+    }
+
+    function addCustomTodoField() {
+      const nameEl = document.getElementById('newFieldName');
+      const amtEl = document.getElementById('newFieldAmt');
+      const name = nameEl.value.trim();
+      if (!name) {
+        showToast('Enter a field name');
+        return;
+      }
+      const amt = amtEl.value === '' ? '' : Math.max(0, Number(amtEl.value));
+      const mData = ensureMonthData(currentMonthKey);
+      mData.todos.push({
+        id: 'cust_' + Date.now(),
+        name,
+        amount: amt,
+        paid: false,
+        fixed: false
+      });
+      nameEl.value = '';
+      amtEl.value = '';
+      saveAppState();
+      renderTodoChecklist();
+      updateSalaryNumbersOnly();
+      showToast('Added ' + name);
+    }
+
+    function deleteTodoField(todoId) {
+      const mData = ensureMonthData(currentMonthKey);
+      mData.todos = mData.todos.filter(t => t.id !== todoId);
+      saveAppState();
+      renderTodoChecklist();
+      updateSalaryNumbersOnly();
+      showToast('Field removed');
+    }
+
+    function updateSalaryNumbersOnly() {
+      const mData = ensureMonthData(currentMonthKey);
+      const salary = Number(mData.salary) || 0;
+      const target = Number(mData.savingsTarget) || 0;
+
+      let totalPlanned = 0;
+      let totalPaid = 0;
+      let totalUnpaid = 0;
+
+      mData.todos.forEach(item => {
+        const amt = Number(item.amount) || 0;
+        totalPlanned += amt;
+        if (item.paid) totalPaid += amt;
+        else totalUnpaid += amt;
+      });
+
+      const remaining = salary - totalPlanned;
+
+      const remEl = document.getElementById('remainingVal');
+      remEl.textContent = formatINR(remaining);
+      remEl.style.color = remaining < 0 ? '#fca5a5' : '#34d399';
+
+      document.getElementById('paidVal').textContent = formatINR(totalPaid);
+      document.getElementById('unpaidVal').textContent = formatINR(totalUnpaid);
+
+      const savBadge = document.getElementById('savingsStatus');
+      if (target <= 0) {
+        savBadge.className = 'pill pill-gray';
+        savBadge.textContent = 'Target: Not Set';
+      } else if (remaining >= target) {
+        savBadge.className = 'pill pill-green';
+        savBadge.textContent = `Savings Met (+${formatINR(remaining - target)})`;
+      } else {
+        savBadge.className = 'pill pill-red';
+        savBadge.textContent = `Short by ${formatINR(target - remaining)}`;
+      }
+    }
+
+    function renderTodoChecklist() {
+      const mData = ensureMonthData(currentMonthKey);
+      const box = document.getElementById('todoListContainer');
+      box.innerHTML = mData.todos.map(item => `
+        <div class="todo-row ${item.paid ? 'is-paid' : ''}">
+          <button class="chk-btn ${item.paid ? 'checked' : ''}" onclick="toggleTodoPaid('${item.id}')" aria-label="Mark paid">
+            ${item.paid ? '✓' : ''}
+          </button>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:800;${item.paid ? 'text-decoration:line-through;color:#64748b;' : ''}">${esc(item.name)}</div>
+            <div style="font-size:10px;color:var(--muted);">${item.fixed ? 'Fixed Monthly' : 'Custom Field'}</div>
+          </div>
+          <div class="amt-input-wrap">
+            <span>₹</span>
+            <input type="number" inputmode="numeric" placeholder="0" value="${item.amount !== '' ? item.amount : ''}" oninput="onTodoAmountInput('${item.id}', this.value)" />
+          </div>
+          ${item.fixed ? '' : `<button class="btn-del" onclick="deleteTodoField('${item.id}')" title="Remove">✕</button>`}
+        </div>
+      `).join('');
+    }
+
+    // ===========================================================
+    // 5B. ALTERNATE-SUNDAY CHITTY DATES (2 DATES PER MONTH)
+    // ===========================================================
+    function getAlternateSundaysForMonth(monthKey) {
+      const [y, m] = monthKey.split('-').map(Number);
+      const [ay, am, ad] = (state.chittyAnchorSun || '2026-11-08').split('-').map(Number);
+      const anchor = new Date(ay, am - 1, ad, 0, 0, 0);
+
+      const monthStart = new Date(y, m - 1, 1);
+      const approxSteps = Math.round((monthStart.getTime() - anchor.getTime()) / FOURTEEN_DAYS_MS);
+      const list = [];
+
+      for (let step = approxSteps - 2; step <= approxSteps + 4; step++) {
+        const d = new Date(anchor.getTime() + step * FOURTEEN_DAYS_MS);
+        if (d.getFullYear() === y && (d.getMonth() + 1) === m) {
+          const iso = toDateKey(d);
+          list.push({
+            num: list.length + 1,
+            date: d,
+            iso,
+            paid: !!state.chittyPaidMap[iso]
+          });
+        }
+      }
+      return list;
+    }
+
+    function toggleChittySundayPaid(iso) {
+      state.chittyPaidMap[iso] = !state.chittyPaidMap[iso];
+      saveAppState();
+      renderChittySundays();
+    }
+
+    function toggleAnchorBox() {
+      const box = document.getElementById('anchorEditBox');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        document.getElementById('anchorDateInput').value = state.chittyAnchorSun || '2026-11-08';
+      }
+    }
+
+    function saveAnchorDate() {
+      const val = document.getElementById('anchorDateInput').value;
+      if (!val) return;
+      state.chittyAnchorSun = val;
+      document.getElementById('anchorEditBox').classList.add('hidden');
+      saveAppState();
+      renderChittySundays();
+      showToast('Chitty Sunday updated');
+    }
+
+    function renderChittySundays() {
+      const meta = getMonthMeta(currentMonthKey);
+      document.getElementById('chittyCardTitle').textContent = `Chitty Sundays — ${meta.shortName}`;
+      const sundays = getAlternateSundaysForMonth(currentMonthKey);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const box = document.getElementById('chittySundaysList');
+      if (!sundays.length) {
+        box.innerHTML = `<div style="font-size:12px;color:var(--muted);">No Chitty Sundays found.</div>`;
+        return;
+      }
+
+      box.innerHTML = sundays.map(c => {
+        const diffDays = Math.round((c.date.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+        let statusHtml = '';
+        if (c.paid) {
+          statusHtml = `<span class="pill pill-green">Paid ✓</span>`;
+        } else if (diffDays < 0) {
+          statusHtml = `<span class="pill pill-red">Overdue</span>`;
+        } else if (diffDays === 0) {
+          statusHtml = `<span class="pill pill-amber">Today</span>`;
+        } else {
+          statusHtml = `<span class="pill pill-blue">Expected in ${diffDays}d</span>`;
+        }
+
+        const labelOrdinal = c.num === 1 ? '1st Chitty Sunday' : (c.num === 2 ? '2nd Chitty Sunday' : '3rd Chitty Sunday');
+        return `
+          <div class="todo-row ${c.paid ? 'is-paid' : ''}" style="justify-content:space-between;">
+            <div class="row-gap">
+              <button class="chk-btn ${c.paid ? 'checked' : ''}" onclick="toggleChittySundayPaid('${c.iso}')">${c.paid ? '✓' : ''}</button>
+              <div>
+                <div style="font-size:13px;font-weight:800;">${formatNiceDate(c.iso)}</div>
+                <div style="font-size:11px;color:var(--muted);">${labelOrdinal} (Alternate Sunday)</div>
+              </div>
+            </div>
+            ${statusHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ===========================================================
+    // 5C. BILL DUE DATES & AUTO-DEBIT REMINDERS
+    // ===========================================================
+    function addDueDateItem() {
+      const name = document.getElementById('newDueName').value.trim();
+      const day = Math.min(31, Math.max(1, Number(document.getElementById('newDueDay').value) || 1));
+      const type = document.getElementById('newDueType').value;
+      if (!name) {
+        showToast('Enter bill name');
+        return;
+      }
+      state.dueTemplates.push({ id: 'due_' + Date.now(), name, day, type });
+      state.dueTemplates.sort((a, b) => a.day - b.day);
+      document.getElementById('newDueName').value = '';
+      document.getElementById('newDueDay').value = '';
+      saveAppState();
+      renderDueDates();
+      showToast('Due date added');
+    }
+
+    function toggleDuePaid(dueId) {
+      const mData = ensureMonthData(currentMonthKey);
+      if (!mData.dueStatus) mData.dueStatus = {};
+      mData.dueStatus[dueId] = !mData.dueStatus[dueId];
+      saveAppState();
+      renderDueDates();
+    }
+
+    function deleteDueDateItem(dueId) {
+      state.dueTemplates = state.dueTemplates.filter(d => d.id !== dueId);
+      saveAppState();
+      renderDueDates();
+    }
+
+    function renderDueDates() {
+      const mData = ensureMonthData(currentMonthKey);
+      if (!mData.dueStatus) mData.dueStatus = {};
+      const box = document.getElementById('dueDatesList');
+
+      if (!state.dueTemplates.length) {
+        box.innerHTML = `<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">No due dates added yet.</div>`;
+        return;
+      }
+
+      box.innerHTML = state.dueTemplates.map(d => {
+        const isDone = !!mData.dueStatus[d.id];
+        return `
+          <div class="todo-row ${isDone ? 'is-paid' : ''}" style="justify-content:space-between;padding:8px 10px;">
+            <div class="row-gap">
+              <button class="chk-btn ${isDone ? 'checked' : ''}" onclick="toggleDuePaid('${d.id}')">${isDone ? '✓' : ''}</button>
+              <div>
+                <div style="font-size:12px;font-weight:800;${isDone ? 'text-decoration:line-through;color:#64748b;' : ''}">${esc(d.name)}</div>
+                <div style="font-size:10px;color:var(--muted);">Every ${d.day}th • ${esc(d.type)}</div>
+              </div>
+            </div>
+            <div class="row-gap">
+              <span class="pill ${d.type === 'Auto-Debit' ? 'pill-blue' : 'pill-amber'}" style="font-size:10px;">${d.type}</span>
+              <button class="btn-del" onclick="deleteDueDateItem('${d.id}')">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSalaryScreen() {
+      const meta = getMonthMeta(currentMonthKey);
+      const mData = ensureMonthData(currentMonthKey);
+
+      document.getElementById('salaryCycleBadge').textContent = `${meta.shortName} Salary (${meta.rangeText})`;
+      document.getElementById('salaryInput').value = mData.salary !== '' ? mData.salary : '';
+      document.getElementById('savingsTargetInput').value = mData.savingsTarget !== '' ? mData.savingsTarget : '';
+
+      renderTodoChecklist();
+      updateSalaryNumbersOnly();
+      renderChittySundays();
+      renderDueDates();
+    }
+
+    // ===========================================================
+    // 6. TAB 3: FULL MONTH HISTORY, RENEWALS, HEALTH & BACKUP
+    // ===========================================================
+    function renderHistoryScreen() {
+      const meta = getMonthMeta(currentMonthKey);
+      const mData = ensureMonthData(currentMonthKey);
+      const salary = Number(mData.salary) || 0;
+      const target = Number(mData.savingsTarget) || 0;
+      const totalPlanned = mData.todos.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      const remaining = salary - totalPlanned;
+
+      const monthSwipes = state.swipeLogs.filter(x => x.dateKey >= meta.startKey && x.dateKey <= meta.endKey);
+      const sundays = getAlternateSundaysForMonth(currentMonthKey);
+
+      document.getElementById('archiveTitle').textContent = `${meta.longName} — Complete Record`;
+      document.getElementById('archiveSub').textContent = `Salary Cycle: ${meta.rangeText}`;
+
+      const rows = [
+        `<div class="row-between"><span>Salary Entered:</span><strong>${formatINR(salary)}</strong></div>`,
+        `<div class="row-between"><span>Savings Target:</span><strong>${target > 0 ? formatINR(target) : 'Not set'}</strong></div>`,
+        `<div class="row-between"><span>Total Expenses Planned:</span><strong style="color:var(--red);">- ${formatINR(totalPlanned)}</strong></div>`,
+        `<div class="row-between" style="padding-bottom:6px;border-bottom:1px solid var(--border);"><span>Remaining Balance:</span><strong style="color:${remaining < 0 ? 'var(--red)' : 'var(--green)'};">${formatINR(remaining)}</strong></div>`,
+        `<div style="font-weight:800;margin-top:4px;color:var(--text);">Expenses & To-Do Status:</div>`,
+        ...mData.todos.map(t => `<div class="row-between" style="padding-left:6px;"><span>${t.paid ? '✅' : '⬜'} ${esc(t.name)}</span><strong>${formatINR(t.amount)}</strong></div>`),
+        `<div style="font-weight:800;margin-top:6px;color:var(--text);">Alternate-Sunday Chitty Dates:</div>`,
+        ...sundays.map(c => `<div class="row-between" style="padding-left:6px;"><span>${c.paid ? '✅' : '⬜'} ${formatNiceDate(c.iso)}</span><span>${c.paid ? 'Paid' : 'Pending'}</span></div>`),
+        `<div style="font-weight:800;margin-top:6px;color:var(--text);">Office Swipe Summary:</div>`,
+        `<div style="padding-left:6px;">Total Logged Days in Cycle: <strong>${monthSwipes.length} days</strong></div>`
+      ];
+
+      document.getElementById('archiveSummaryBox').innerHTML = rows.join('');
+      renderRenewals();
+      renderHealthLogs();
+    }
+
+    function downloadMonthTxt() {
+      const meta = getMonthMeta(currentMonthKey);
+      const mData = ensureMonthData(currentMonthKey);
+      const salary = Number(mData.salary) || 0;
+      const target = Number(mData.savingsTarget) || 0;
+      const totalPlanned = mData.todos.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      const remaining = salary - totalPlanned;
+      const sundays = getAlternateSundaysForMonth(currentMonthKey);
+      const monthSwipes = state.swipeLogs.filter(x => x.dateKey >= meta.startKey && x.dateKey <= meta.endKey);
+
+      const lines = [
+        `MYSPACE DAILY — ${meta.longName.toUpperCase()} RECORD`,
+        `Salary Cycle: ${meta.rangeText}`,
+        `------------------------------------------`,
+        `Salary Credited: Rs. ${salary}`,
+        `Savings Target:  Rs. ${target}`,
+        `Total Expenses:  Rs. ${totalPlanned}`,
+        `Remaining:       Rs. ${remaining}`,
+        ``,
+        `MONTHLY EXPENSES & TO-DO:`,
+        ...mData.todos.map(t => `- [${t.paid ? 'PAID' : 'UNPAID'}] ${t.name}: Rs. ${Number(t.amount) || 0}`),
+        ``,
+        `ALTERNATE-SUNDAY CHITTY DATES:`,
+        ...sundays.map(c => `- [${c.paid ? 'PAID' : 'PENDING'}] ${formatNiceDate(c.iso)}`),
+        ``,
+        `OFFICE SWIPE LOGS (MAIN GATE):`,
+        ...(monthSwipes.length ? monthSwipes.map(s => s.type === 'off'
+          ? `- ${s.dateLabel}: Week Off / No Swipe`
+          : `- ${s.dateLabel}: In ${formatTime12(s.inTs, false)} | Out ${formatTime12(s.outTs, false)} (${formatHMS(s.durationMs)})`) : ['- No records'])
+      ];
+
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MySpace_${meta.shortName.replace(/\s+/g, '_')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Report downloaded');
+    }
+
+    // Renewals & Health Log
+    function addRenewal() {
+      const title = document.getElementById('renTitle').value.trim();
+      const dateStr = document.getElementById('renDate').value;
+      if (!title || !dateStr) {
+        showToast('Enter reminder & date');
+        return;
+      }
+      state.renewals.push({ id: 'ren_' + Date.now(), title, dateStr });
+      state.renewals.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+      document.getElementById('renTitle').value = '';
+      document.getElementById('renDate').value = '';
+      saveAppState();
+      renderRenewals();
+      showToast('Reminder added');
+    }
+
+    function deleteRenewal(id) {
+      state.renewals = state.renewals.filter(r => r.id !== id);
+      saveAppState();
+      renderRenewals();
+    }
+
+    function renderRenewals() {
+      const box = document.getElementById('renewalList');
+      if (!state.renewals.length) {
+        box.innerHTML = `<div style="font-size:11px;color:var(--muted);">No renewal reminders added.</div>`;
+        return;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      box.innerHTML = state.renewals.map(r => {
+        const [y, m, d] = r.dateStr.split('-').map(Number);
+        const diff = Math.round((new Date(y, m - 1, d).getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+        const tag = diff < 0 ? `${Math.abs(diff)}d ago` : (diff === 0 ? 'Today' : `In ${diff}d`);
+        return `
+          <div class="todo-row" style="justify-content:space-between;padding:8px 10px;">
+            <div>
+              <div style="font-size:12px;font-weight:800;">${esc(r.title)}</div>
+              <div style="font-size:10px;color:var(--muted);">${formatNiceDate(r.dateStr)}</div>
+            </div>
+            <div class="row-gap">
+              <span class="pill pill-blue" style="font-size:10px;">${tag}</span>
+              <button class="btn-del" onclick="deleteRenewal('${r.id}')">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addHealth() {
+      const note = document.getElementById('healthNote').value.trim();
+      const dateStr = document.getElementById('healthDate').value || toDateKey(new Date());
+      if (!note) {
+        showToast('Enter health or medicine note');
+        return;
+      }
+      state.healthLogs.unshift({ id: 'hl_' + Date.now(), note, dateStr });
+      document.getElementById('healthNote').value = '';
+      saveAppState();
+      renderHealthLogs();
+      showToast('Health entry logged');
+    }
+
+    function deleteHealth(id) {
+      state.healthLogs = state.healthLogs.filter(h => h.id !== id);
+      saveAppState();
+      renderHealthLogs();
+    }
+
+    function renderHealthLogs() {
+      const box = document.getElementById('healthList');
+      if (!state.healthLogs.length) {
+        box.innerHTML = `<div style="font-size:11px;color:var(--muted);">No health logs yet.</div>`;
+        return;
+      }
+      box.innerHTML = state.healthLogs.map(h => `
+        <div class="todo-row" style="justify-content:space-between;padding:8px 10px;">
+          <div>
+            <div style="font-size:12px;font-weight:800;">${esc(h.note)}</div>
+            <div style="font-size:10px;color:var(--muted);">${formatNiceDate(h.dateStr)}</div>
+          </div>
+          <button class="btn-del" onclick="deleteHealth('${h.id}')">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function downloadJsonBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MySpace_Backup_${toDateKey(new Date())}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Backup saved');
+    }
+
+    function restoreJsonBackup(ev) {
+      const file = ev.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data && typeof data === 'object') {
+            state = Object.assign({}, state, data);
+            saveAppState();
+            renderMonthDropdown();
+            updateSwipeControls();
+            refreshAllScreens();
+            showToast('Backup restored!');
+          }
+        } catch (err) {
+          showToast('Invalid backup file');
+        }
+      };
+      reader.readAsText(file);
+      ev.target.value = '';
+    }
+
+    // ===========================================================
+    // 7. FORMATTING & UI UTILITIES
+    // ===========================================================
+    function formatINR(val) {
+      const num = Number(val) || 0;
+      const sign = num < 0 ? '-' : '';
+      return sign + '₹' + Math.abs(num).toLocaleString('en-IN');
+    }
+
+    function formatTime12(ts, withSec) {
+      return new Date(ts).toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: withSec ? '2-digit' : undefined,
+        hour12: true
+      }).toUpperCase();
+    }
+
+    function formatHMS(ms) {
+      const s = Math.floor(Math.max(0, ms) / 1000);
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m ${String(sec).padStart(2, '0')}s`;
+    }
+
+    function formatNiceDate(iso) {
+      const [y, m, d] = iso.split('-').map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString('en-IN', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+      });
+    }
+
+    function esc(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2200);
+    }
+
+    function openModal(title, msg, onConfirm) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalMsg').textContent = msg;
+      pendingModalAction = onConfirm;
+      document.getElementById('confirmModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+      pendingModalAction = null;
+    }
+
+    document.getElementById('modalConfirmBtn').onclick = () => {
+      if (pendingModalAction) pendingModalAction();
+      closeModal();
+    };
+
+    // ===========================================================
+    // 8. INSTANT STARTUP
+    // ===========================================================
+    function startApp() {
+      loadAppState();
+      const now = new Date();
+      document.getElementById('todayDateLabel').textContent = now.toLocaleDateString('en-IN', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+      });
+      document.getElementById('healthDate').value = toDateKey(now);
+
+      currentMonthKey = detectActiveSalaryMonthKey(now);
+      ensureMonthData(currentMonthKey);
+      renderMonthDropdown();
+
+      updateSwipeControls();
+      refreshAllScreens();
+
+      setInterval(() => {
+        if (state.activeShift) updateLiveShiftClock();
+      }, 1000);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startApp);
+    } else {
+      startApp();
+    }
+  </script>
+</body>
+</html>
